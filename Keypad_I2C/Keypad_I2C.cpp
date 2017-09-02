@@ -34,14 +34,24 @@
 // Let the user define a keymap - assume the same row/column count as defined in constructor
 void Keypad_I2C::begin(char *userKeymap) {
     Keypad::begin(userKeymap);
-	TwoWire::begin();
+	if ( i2csda < 0 || i2cscl < 0 ) {
+		TwoWire::begin();
+	}
+	else {
+		TwoWire::begin(i2csda, i2cscl);
+	}
 	pinState = pinState_set( );
 }
 
 
 // Initialize I2C
 void Keypad_I2C::begin(void) {
-	TwoWire::begin();
+	if ( i2csda < 0 || i2cscl < 0 ){
+		TwoWire::begin();
+	}
+	else {
+		TwoWire::begin(i2csda, i2cscl);
+	}
 //	pinState = 0xff;
 	pinState = pinState_set( );
 }

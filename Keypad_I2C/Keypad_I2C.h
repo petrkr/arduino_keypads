@@ -40,9 +40,14 @@
 
 class Keypad_I2C : public Keypad, public TwoWire {
 public:
-	Keypad_I2C(char* userKeymap, byte* row, byte* col, byte numRows, byte numCols, byte address, byte width = 1) :
-		Keypad(userKeymap, row, col, numRows, numCols) { i2caddr = address; i2cwidth = width;}	
-	
+#ifdef ARDUINO_ARCH_ESP32
+	Keypad_I2C(char* userKeymap, byte* row, byte* col, byte numRows, byte numCols, byte address, byte width = 1, int sda = -1, int scl = -1, uint8_t bus_num = 0) :
+		Keypad(userKeymap, row, col, numRows, numCols), TwoWire(bus_num) { i2caddr = address; i2cwidth = width; i2csda = sda; i2cscl = scl;}
+#else
+	Keypad_I2C(char* userKeymap, byte* row, byte* col, byte numRows, byte numCols, byte address, byte width = 1, int sda = -1, int scl = -1) :
+		Keypad(userKeymap, row, col, numRows, numCols) { i2caddr = address; i2cwidth = width; i2csda = sda; i2cscl = scl;}
+#endif
+
 
 	// Keypad function
 	void begin(char *userKeymap);
@@ -64,6 +69,10 @@ public:
 private:
     // I2C device address
     byte i2caddr;
+    // I2C SDA pin
+    int i2csda;
+    // I2C SCL pin
+    int i2cscl;
     // I2C port expander device width in bytes (1 for 8574, 2 for 8575)
     byte i2cwidth;
 	// I2C pin_write state persistant storage
